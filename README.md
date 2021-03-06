@@ -10,7 +10,7 @@ comment these lines:
 # target = "arm-unknown-linux-gnueabihf"
 ```
 
-i compiled like this:
+i compiled like this on mac os x catalina:
 ```
 cargo build --target arm-unknown-linux-gnueabihf --release
 ```
