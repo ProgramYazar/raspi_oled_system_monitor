@@ -1,0 +1,14 @@
+[package]
+name = "asd"
+version = "0.1.0"
+authors = ["İlter Engin KIZILGUN <programyazar@gmail.com>"]
+edition = "2018"
+
+[build]
+target = "arm-unknown-linux-gnueabihf"
+
+[dependencies]
+rppal = { version = "0.11.3", features = ["hal"] }
+embedded-graphics = "0.6.2"
+ssd1306 = "0.5.1"
+systemstat = "0.1.7"
