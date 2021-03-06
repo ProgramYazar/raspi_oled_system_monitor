@@ -3,8 +3,11 @@
 You can use this program for system monitoring on raspberry pi or compatible dev boards (maybe: bananapi, nanopi..)
 This program usign linux hal layer. I use this program by cross compiling. If you compile on raspberry pi
 comment these lines:
---> # [build]
---> # target = "arm-unknown-linux-gnueabihf"
+
+```
+# [build]
+# target = "arm-unknown-linux-gnueabihf"
+```
 
 i compiled like this:
 cargo build --target arm-unknown-linux-gnueabihf --release
