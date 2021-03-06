@@ -1,3 +1,4 @@
+![rust oled display example](images/o1.jpeg)
 # rust i2c oled display (128x64) for raspberry pies: zero,2,3,4..
 
 You can use this program for system monitoring on raspberry pi or compatible dev boards (maybe: bananapi, nanopi..)
