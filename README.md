@@ -10,9 +10,9 @@ comment these lines:
 ```
 
 i compiled like this:
+```
 cargo build --target arm-unknown-linux-gnueabihf --release
-
-
+```
 
 this program spent max %1 cpu and %.5 memory on raspberry pi zero. this means nothing. 
 
