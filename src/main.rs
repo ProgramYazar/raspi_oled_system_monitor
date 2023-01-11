@@ -1,12 +1,9 @@
-use std::thread;
-use std::time::Duration;
-
 use embedded_graphics::{mono_font, prelude::*};
-
 use raspi_old_sysmon::{graphics_display::GraphicDisplay, sysmon::SystemMon};
 use rppal::i2c;
-
 use ssd1306::{size::DisplaySize128x64, I2CDisplayInterface};
+use std::thread;
+use std::time::Duration;
 
 const LCD_ADDRESS: u16 = 0x3c;
 
