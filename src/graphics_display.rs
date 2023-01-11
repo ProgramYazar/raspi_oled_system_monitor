@@ -5,23 +5,24 @@ use embedded_graphics::{
     text::Text,
     Drawable,
 };
-use ssd1306::{mode::BufferedGraphicsMode, prelude::*, size::DisplaySize128x64, Ssd1306};
+use ssd1306::{mode::BufferedGraphicsMode, prelude::*, Ssd1306};
 
 use crate::mock_error::MockError;
 
-pub struct GraphicDisplay<'a, DI> {
-    display: Ssd1306<DI, DisplaySize128x64, BufferedGraphicsMode<DisplaySize128x64>>,
+pub struct GraphicDisplay<'a, DI, DS: DisplaySize> {
+    display: Ssd1306<DI, DS, BufferedGraphicsMode<DS>>,
     text_style: MonoTextStyle<'a, BinaryColor>,
 }
 
-impl<'a, DI> GraphicDisplay<'a, DI>
+impl<'a, DI, DS> GraphicDisplay<'a, DI, DS>
 where
     DI: WriteOnlyDataCommand, /* i2c interface*/
+    DS: DisplaySize,
 {
-    pub fn new(i2c_interface: DI, font: &'a MonoFont) -> Self {
+    pub fn new(i2c_interface: DI, size: DS, font: &'a MonoFont) -> Self {
         let mut display = Ssd1306::new(
             i2c_interface,
-            DisplaySize128x64,
+            size,
             ssd1306::rotation::DisplayRotation::Rotate0,
         )
         .into_buffered_graphics_mode();
