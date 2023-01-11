@@ -1,5 +1,5 @@
 [package]
-name = "asd"
+name = "raspi_old_sysmon"
 version = "0.1.0"
 authors = ["İlter Engin KIZILGUN <programyazar@gmail.com>"]
 edition = "2021"
@@ -9,6 +9,6 @@ target = "arm-unknown-linux-gnueabihf"
 
 [dependencies]
 rppal = { version = "0.11.3", features = ["hal"] }
-embedded-graphics = "0.6.2"
-ssd1306 = "0.5.1"
-systemstat = "0.1.7"
+embedded-graphics = "0.7.1"
+ssd1306 = "0.7.1"
+systemstat = "0.2.2"
