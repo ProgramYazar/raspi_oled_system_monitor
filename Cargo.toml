@@ -2,7 +2,7 @@
 name = "asd"
 version = "0.1.0"
 authors = ["İlter Engin KIZILGUN <programyazar@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 [build]
 target = "arm-unknown-linux-gnueabihf"

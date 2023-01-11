@@ -1,3 +1,6 @@
+use std::thread;
+use std::time::Duration;
+
 use embedded_graphics::fonts::Font8x16;
 use embedded_graphics::{
     drawable::Drawable, fonts::Text, pixelcolor::BinaryColor, prelude::Point,
@@ -5,67 +8,65 @@ use embedded_graphics::{
 };
 use rppal::i2c::I2c;
 use ssd1306::{displaysize::DisplaySize128x64, mode::GraphicsMode, Builder, I2CDIBuilder};
-use std::time::Duration;
-
-use std::error::Error;
-use std::thread;
-use systemstat::{Platform, System};
 mod lib;
-use lib::*;
+use lib::{MockError, SystemMon};
 
-fn main() {
-    loop {
-        if let Err(_) = run() {
-            thread::sleep(Duration::from_secs(5));
-        }
-    }
-}
+const LCD_ADDRESS: u16 = 0x3c;
 
-fn run() -> Result<(), Box<dyn Error>> {
-    let sys = System::new();
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let sys = SystemMon::new();
 
-    let mut i2c = I2c::new()?;
-    i2c.set_slave_address(0x3c).unwrap();
+    let lcd_interface =
+        match I2c::new().and_then(|mut i2c| match i2c.set_slave_address(LCD_ADDRESS) {
+            Ok(_) => Ok(i2c),
+            Err(e) => Err(e),
+        }) {
+            Ok(i2c) => I2CDIBuilder::new().init(i2c),
+            Err(e) => {
+                return Err(Box::new(MockError::new(format!(
+                    "lcd interface init problem<i2c>: {:?}",
+                    e
+                ))))
+            }
+        };
 
-    let interface = I2CDIBuilder::new().init(i2c);
     let mut disp: GraphicsMode<_, _> = Builder::new()
         .size(DisplaySize128x64)
-        .connect(interface)
+        .connect(lcd_interface)
         .into();
 
-    disp.init().unwrap();
+    if let Err(e) = disp.init() {
+        let err_message = format!("display init problem: {:?}", e);
+        return Err(Box::new(MockError::new(err_message)));
+    }
 
     let text_style = TextStyleBuilder::new(Font8x16)
         .text_color(BinaryColor::On)
         .build();
 
-    loop {
-        let cpu_usage = get_cpu_usage(sys.cpu_load_aggregate()?); // this wait display too
-        let mem_usage = get_memory_usage(sys.memory()?);
-        let cpu_temp = sys.cpu_temp()?.round() as i32;
-
-        disp.clear();
-        Text::new(get_ip_addr(sys.networks().unwrap()).as_str(), Point::zero())
-            .into_styled(text_style)
-            .draw(&mut disp)
-            .unwrap();
-
-        Text::new(
-            format!("C: {}%  M: {}%", cpu_usage, mem_usage).as_str(),
-            Point::new(0, 20),
-        )
+    let mut write_to_lcd = |text: String, pos: Point| match Text::new(text.as_str(), pos)
         .into_styled(text_style)
         .draw(&mut disp)
-        .unwrap();
+    {
+        Ok(_) => (),
+        Err(e) => println!("error: {:?}", e),
+    };
 
-        Text::new(format!("T: {}°C", cpu_temp).as_str(), Point::new(0, 40))
-            .into_styled(text_style)
-            .draw(&mut disp)
-            .unwrap();
-        disp.flush().unwrap();
+    loop {
+        let cpu_usage = sys.cpu_usage(); // this wait display too
+        let mem_usage = sys.memory_usage();
+        let cpu_temp = sys.cpu_temp();
+        let ip_addr = sys.ip_addr();
+
+        //disp.clear();
+        write_to_lcd(ip_addr, Point::zero());
+        // write_to_lcd(
+        //     format!("C: {: >3}%  M: {: >3}%", cpu_usage, mem_usage),
+        //     Point::new(0, 20),
+        // );
+        write_to_lcd(format!("T: {: >3}°C", cpu_temp), Point::new(0, 40));
+
+        //disp.flush().unwrap();
+        thread::sleep(Duration::from_secs(5));
     }
-
-    // disp.release();
-
-    // Ok(())
 }
