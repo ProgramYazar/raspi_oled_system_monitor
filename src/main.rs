@@ -1,5 +1,6 @@
 use embedded_graphics::{mono_font, prelude::*};
-use raspi_old_sysmon::{graphics_display::GraphicDisplay, sysmon::SystemMon};
+use raspi_oled_sysmon::{graphics_display::GraphicDisplay, sysmon::SystemMon};
+#[cfg(any(target_arch = "aarch64", target_arch = "aarch64"))]
 use rppal::i2c;
 use ssd1306::{size::DisplaySize128x64, I2CDisplayInterface};
 use std::thread;
@@ -7,6 +8,12 @@ use std::time::Duration;
 
 const LCD_ADDRESS: u16 = 0x3c;
 
+#[cfg(target_os = "macos")]
+fn main() {
+    println!("this binary only compile on raspeberry pi 4 and maybe zero")
+}
+
+#[cfg(target_arch = "aarch64")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sys = SystemMon::new();
     let _i2c = i2c::I2c::new()

@@ -30,13 +30,20 @@ impl SystemMon {
     }
 
     pub fn cpu_usage(&self) -> u32 {
-        if let Ok(cpu) = self.plat.cpu_load_aggregate().and_then(|cla| {
+        match self.plat.cpu_load_aggregate().and_then(|cla| {
             thread::sleep(Duration::from_millis(500));
             cla.done()
         }) {
-            ((cpu.user + cpu.system + cpu.nice) * 100.0).round() as u32
-        } else {
-            0
+            Ok(cpu) => {
+                #[cfg(debug_assertions)]
+                println!("{:?}, {:?}, {:?}", cpu.user, cpu.system, cpu.nice);
+                return ((cpu.user + cpu.system + cpu.nice) * 100.0).round() as u32;
+            }
+            Err(e) => {
+                #[cfg(debug_assertions)]
+                dbg!(e);
+                0
+            }
         }
     }
 

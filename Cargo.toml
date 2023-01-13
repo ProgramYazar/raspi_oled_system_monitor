@@ -1,5 +1,5 @@
 [package]
-name = "raspi_old_sysmon"
+name = "raspi_oled_sysmon"
 version = "0.1.0"
 authors = ["İlter Engin KIZILGUN <programyazar@gmail.com>"]
 edition = "2021"
@@ -7,8 +7,19 @@ edition = "2021"
 [build]
 target = "arm-unknown-linux-gnueabihf"
 
+[[bin]]
+name = "test_mac"
+path="src/test_monitor.rs"
+
+
 [dependencies]
-rppal = { version = "0.11.3", features = ["hal"] }
 embedded-graphics = "0.7.1"
 ssd1306 = "0.7.1"
 systemstat = "0.2.2"
+
+
+[target.'cfg(target_arch = "aarch64")'.dependencies]
+rppal = { version = "0.11.3", features = ["hal"] }
+
+[target.'cfg(target_arch = "arm")'.dependencies]
+rppal = { version = "0.11.3", features = ["hal"] }
